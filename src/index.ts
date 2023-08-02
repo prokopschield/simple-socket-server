@@ -1,5 +1,7 @@
 import { encode } from "@prokopschield/don";
 import { decode } from "doge-json";
+import express from "express";
+import { createServer, Server as HttpServer } from "http";
 import { Server as IOServer, ServerOptions, Socket } from "socket.io";
 
 export class State extends Map<string, string> {
@@ -19,11 +21,17 @@ export class Server<
 	>
 > extends IOServer {
 	constructor(options: Partial<ServerOptions>, ...descriptors: (T | T[])[]) {
-		super({
+		const app = express();
+		const http = createServer(app);
+
+		super(http, {
 			allowEIO3: true,
 			cors: { origin: true },
 			...options,
 		});
+
+		this.app = app;
+		this.http = http;
 
 		this.addHandlers(...descriptors);
 
@@ -43,7 +51,9 @@ export class Server<
 		});
 	}
 
+	app: express.Express;
 	handler = {} as T;
+	http: HttpServer;
 
 	addHandlers(...descriptors: (T | T[])[]) {
 		for (const descriptor of descriptors) {
