@@ -1,0 +1,18 @@
+{
+	"name": "@prokopschield/simple-socket-server",
+	"description": "Simple Socket Server",
+	"version": "0.0.1-1",
+	"main": "lib/index.js",
+	"author": "Prokop Schield",
+	"dependencies": {
+		"@prokopschield/don": "^0.1.2",
+		"doge-json": "^1.2.12",
+		"require-gpl": "^0.1.2",
+		"socket.io": "^4.7.1"
+	},
+	"devDependencies": {
+		"@types/node": ">=16"
+	},
+	"keywords": [],
+	"license": "GPL-3.0-or-later"
+}
