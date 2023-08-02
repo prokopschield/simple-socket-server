@@ -38,6 +38,8 @@ export class Server<
 		this.on("connection", async (socket) => {
 			const state = new State();
 
+			this.states.set(socket, state);
+
 			socket.onAny(async (event, ...args) => {
 				const callback = args.pop();
 				const handler = this.handler[String(event)];
@@ -50,6 +52,8 @@ export class Server<
 			});
 		});
 	}
+
+	states = new WeakMap<Socket, State>();
 
 	app: express.Express;
 	handler = {} as T;
