@@ -3,6 +3,7 @@ import { decode } from "doge-json";
 import express from "express";
 import { createServer, Server as HttpServer } from "http";
 import { Server as IOServer, ServerOptions, Socket } from "socket.io";
+import { inspect } from "util";
 
 export class State extends Map<string, string> {
 	get(key: string) {
@@ -47,7 +48,7 @@ export class Server<
 				try {
 					callback(await handler(socket, state, ...args));
 				} catch (error) {
-					callback?.(error);
+					callback?.({ error: inspect(error) });
 				}
 			});
 		});
