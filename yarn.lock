@@ -469,6 +469,11 @@ proxy-addr@~2.0.7:
     forwarded "0.2.0"
     ipaddr.js "1.9.1"
 
+ps-std@^0.1.44:
+  version "0.1.44"
+  resolved "https://registry.yarnpkg.com/ps-std/-/ps-std-0.1.44.tgz#609bcbfee028d02c138326010b8d394ad0266b9a"
+  integrity sha512-1aT0G5/AeaT2a4GF/988ObqAD3Sut5Fg6JgKNJ/NBYFIfzeeAOogbgwyg3qJoBVQCNJznetpTobC8nNzahcF5w==
+
 qs@6.11.0:
   version "6.11.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.11.0.tgz#fd0d963446f7a65e1367e01abd85429453f0c37a"

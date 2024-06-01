@@ -8,6 +8,7 @@
 		"@prokopschield/don": "^0.1.2",
 		"doge-json": "^1.2.12",
 		"express": "^4.19.2",
+		"ps-std": "^0.1.44",
 		"require-gpl": "^0.1.2",
 		"socket.io": "^4.7.5"
 	},
