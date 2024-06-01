@@ -2,8 +2,13 @@ import { encode } from "@prokopschield/don";
 import { decode } from "doge-json";
 import express from "express";
 import { createServer, Server as HttpServer } from "http";
+import { Err, Ok, omit, Result } from "ps-std";
 import { Server as IOServer, ServerOptions, Socket } from "socket.io";
 import { inspect } from "util";
+
+export interface Options extends Partial<ServerOptions> {
+	port?: bigint | number | string;
+}
 
 export class State extends Map<string, string> {
 	get(key: string) {
@@ -21,14 +26,14 @@ export class Server<
 		(_socket: Socket, _state: Map<string, string>, ...args: any[]) => any
 	>
 > extends IOServer {
-	constructor(options: Partial<ServerOptions>, ...descriptors: (T | T[])[]) {
+	constructor(options: Options, ...descriptors: (T | T[])[]) {
 		const app = express();
 		const http = createServer(app);
 
 		super(http, {
 			allowEIO3: true,
 			cors: { origin: true },
-			...options,
+			...omit(options, ["port"]),
 		});
 
 		this.app = app;
@@ -52,6 +57,10 @@ export class Server<
 				}
 			});
 		});
+
+		if (options.port) {
+			this.setPort(options.port);
+		}
 	}
 
 	states = new WeakMap<Socket, State>();
@@ -72,6 +81,33 @@ export class Server<
 			Object.setPrototypeOf(handler, this.handler);
 
 			this.handler = handler;
+		}
+	}
+
+	_port?: number;
+
+	ports = new Array<number>();
+
+	get port(): number | undefined {
+		return this._port;
+	}
+
+	set port(port: bigint | number | string) {
+		this.setPort(port);
+	}
+
+	setPort(port?: bigint | number | string): Result<number, unknown> {
+		try {
+			const port_number = Number(port);
+
+			if (!this.ports.includes(port_number)) {
+				this.ports.push(port_number);
+				this.http.listen(port_number);
+			}
+
+			return Ok((this._port = port_number));
+		} catch (error) {
+			return Err(error);
 		}
 	}
 }
