@@ -132,6 +132,7 @@ export class Server<
 						pick(c_request, ["headers"]),
 						(p_response) => {
 							p_response.on("error", error_handler);
+							c_response.status(p_response.statusCode || 200);
 
 							for (const [key, value] of Object.entries(
 								p_response.headers
@@ -144,6 +145,7 @@ export class Server<
 					);
 
 					p_request.on("error", error_handler);
+					c_request.pipe(p_request);
 				} else {
 					next();
 				}
