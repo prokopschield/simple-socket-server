@@ -1,8 +1,8 @@
 import { encode } from "@prokopschield/don";
 import { decode } from "doge-json";
 import express from "express";
-import { createServer, Server as HttpServer } from "http";
-import { Err, Ok, omit, Result } from "ps-std";
+import { createServer, request, Server as HttpServer } from "http";
+import { Err, noop, Ok, omit, pick, Result } from "ps-std";
 import { Server as IOServer, ServerOptions, Socket } from "socket.io";
 import { inspect } from "util";
 
@@ -109,6 +109,48 @@ export class Server<
 		} catch (error) {
 			return Err(error);
 		}
+	}
+
+	forward(
+		pathname: string,
+		endpoint: string | URL,
+		error_handler: (error: unknown) => any = noop
+	) {
+		this.app.use((c_request, c_response, next) => {
+			try {
+				if (c_request.url.startsWith(pathname)) {
+					const { href } = new URL(
+						c_request.url.slice(pathname.length),
+						endpoint
+					);
+
+					c_request.on("error", error_handler);
+					c_response.on("error", error_handler);
+
+					const p_request = request(
+						href,
+						pick(c_request, ["headers"]),
+						(p_response) => {
+							p_response.on("error", error_handler);
+
+							for (const [key, value] of Object.entries(
+								p_response.headers
+							)) {
+								c_response.setHeader(key, String(value));
+							}
+
+							p_response.pipe(c_response);
+						}
+					);
+
+					p_request.on("error", error_handler);
+				} else {
+					next();
+				}
+			} catch (error) {
+				error_handler(noop);
+			}
+		});
 	}
 }
 
